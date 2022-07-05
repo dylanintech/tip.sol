@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faGithub, faDiscord, faTwitter } from '@fortawesome/free-brands-svg-icons'
 import './App.css';
+
+library.add(faGithub, faDiscord, faTwitter);
 
 function App() {
   //State
@@ -45,11 +48,41 @@ function App() {
   const renderNotConnectedContainer = () => {
     return (
       <button 
-       className='bg-gray-900 hover:bg-gray-700 hover:border border-pink text-white font-bold rounded-full shadow-2xl px-4 py-2 w-1/2'
+       className='bg-gray-900 hover:bg-gray-700 border border-black hover:border-white text-white font-bold rounded-full shadow-2xl px-4 py-2 w-1/2 h-14'
        onClick={connectWallet}
        >
         CONNECT WALLET
       </button>
+    )
+  }
+
+  const renderConnectedContainer = () => {
+    return (
+      <div className="text-center text-6xl text-white font-bold min-w-full pt-10">
+        <p>Thanks for connecting! Tip.sol is a magical✨ place where you can tip other users for posting content that's valuble to you and get tipped too! The Best Part? You send and receive 💸 in Solana for the quickest and most frictionless experience possible! Join our community👇 to be notified as features begin to roll out! We're glad to have you here.</p>
+      </div>
+    )
+  }
+
+  const renderTitle = () => {
+    return (
+      <h1 className="font-dm-sans text-9xl font-bold text-white py-20 min-w-full pt-32 max-h-full">Tip.sol</h1>
+    )
+  }
+
+  const renderCommunity = () => {
+    return (
+      <div className="flex justify-evenly items-end text-center py-10">
+        <a href="https://github.com/Dmigit/tip.sol" target="_blank">
+          <FontAwesomeIcon icon="fa-brands fa-github" size='3x' />
+        </a>
+        <a href="https://discord.gg/UeZyQgBp" target="_blank">
+          <FontAwesomeIcon icon="fa-brands fa-discord" size='3x' />
+        </a>
+        <a href="https://twitter.com/Tipsolana" target="_blank">
+          <FontAwesomeIcon icon="fa-brands fa-twitter" size='3x' />
+        </a>
+     </div>
     )
   }
 
@@ -63,9 +96,16 @@ function App() {
   }, []);
 
   return (
-    <div className="text-center from-solana-purple to-solana-green bg-gradient-to-r w-full h-screen">
-      <h1 className="font-dm-sans text-9xl font-bold text-white py-20 min-w-full">Tip.sol</h1>
+    <div className={`text-center from-solana-purple to-solana-green bg-gradient-to-r w-full ${walletAddress ? 'h-full lg:h-screen' : 'h-screen' }`}>
+      {!walletAddress && renderTitle()}
       {!walletAddress && renderNotConnectedContainer()}
+      {walletAddress && renderConnectedContainer()}
+      {walletAddress && renderCommunity()}
+      {/* <div className="flex justify-evenly items-end text-center py-10">
+        <FontAwesomeIcon icon="fa-brands fa-github" size='3x' />
+        <FontAwesomeIcon icon="fa-brands fa-discord" size='3x' />
+        <FontAwesomeIcon icon="fa-brands fa-twitter" size='3x' />
+      </div> */}
     </div>
   );
 }
