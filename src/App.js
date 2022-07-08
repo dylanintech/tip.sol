@@ -59,7 +59,8 @@ function App() {
   const renderConnectedContainer = () => {
     return (
       <div className="text-center text-6xl text-white font-bold min-w-full pt-10">
-        <p>Thanks for connecting! Tip.sol is a magical✨ place where you can tip other users for posting content that's valuble to you and get tipped too! The Best Part? You send and receive 💸 in Solana for the quickest and most frictionless experience possible! Join our community👇 to be notified as features begin to roll out! We're glad to have you here.</p>
+        <h1 className="mb-6 text-8xl">Tip.sol</h1>
+        <p>Thanks for connecting! Tip.sol is a magical✨ place that lets you post useful content and get tipped for it. In Solana! Join our community👇 to be notified as features begin to roll out! We're glad to have you here.</p>
       </div>
     )
   }
@@ -74,13 +75,13 @@ function App() {
     return (
       <div className="flex justify-evenly items-end text-center py-10">
         <a href="https://github.com/Dmigit/tip.sol" target="_blank">
-          <FontAwesomeIcon icon="fa-brands fa-github" size='3x' />
+          <FontAwesomeIcon icon="fa-brands fa-github" size='3x' className="hover:h-14"/>
         </a>
         <a href="https://discord.gg/UeZyQgBp" target="_blank">
-          <FontAwesomeIcon icon="fa-brands fa-discord" size='3x' />
+          <FontAwesomeIcon icon="fa-brands fa-discord" size='3x' className="hover:h-14" />
         </a>
         <a href="https://twitter.com/Tipsolana" target="_blank">
-          <FontAwesomeIcon icon="fa-brands fa-twitter" size='3x' />
+          <FontAwesomeIcon icon="fa-brands fa-twitter" size='3x' className="hover:h-14" />
         </a>
      </div>
     )
@@ -101,11 +102,6 @@ function App() {
       {!walletAddress && renderNotConnectedContainer()}
       {walletAddress && renderConnectedContainer()}
       {walletAddress && renderCommunity()}
-      {/* <div className="flex justify-evenly items-end text-center py-10">
-        <FontAwesomeIcon icon="fa-brands fa-github" size='3x' />
-        <FontAwesomeIcon icon="fa-brands fa-discord" size='3x' />
-        <FontAwesomeIcon icon="fa-brands fa-twitter" size='3x' />
-      </div> */}
     </div>
   );
 }
