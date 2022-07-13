@@ -198,7 +198,15 @@ function App() {
   const renderConnectedContainer = () => {
     return (
       <div className="text-center text-white font-bold min-w-full pt-10">
-        <h1 className="mb-6 text-8xl">Tip.sol</h1>
+        {/* <h1 className="mb-6 text-8xl">Tip.sol</h1> */}
+        <div className="flex justify-evenly items-center">
+          <div className="border-black border-2 bg-purple-400/50 w-1/6 max-h-20 rounded-lg shadow-lg py-2">
+            <h3>Connected✅</h3>
+            <p>{shortenAddress(walletAddress)}</p>
+          </div>
+          <h1 className="mb-6 text-8xl">Tip.sol</h1>
+          {renderCommunity()}
+        </div>
         <button className="border-black border-2 rounded-lg w-1/3 bg-purple-500/50 shadow-2xl hover:bg-purple-700/50 hover:shadow-none p-2 my-2" onClick={(event) => {
           event.preventDefault();
           setCreatingPost(true)
@@ -297,15 +305,15 @@ function App() {
 
   const renderCommunity = () => {
     return (
-      <div className="flex justify-evenly items-end text-center py-10">
+      <div className="flex justify-center  text-center py-9 ">
         <a href="https://github.com/Dmigit/tip.sol" target="_blank" rel="noreferrer">
-          <FontAwesomeIcon icon="fa-brands fa-github" size='3x' className="hover:h-14"/>
+          <FontAwesomeIcon icon="fa-brands fa-github" size='3x' className="px-3"/>
         </a>
         <a href="https://discord.gg/UeZyQgBp" target="_blank" rel="noreferrer">
-          <FontAwesomeIcon icon="fa-brands fa-discord" size='3x' className="hover:h-14" />
+          <FontAwesomeIcon icon="fa-brands fa-discord" size='3x' className="px-3" />
         </a>
         <a href="https://twitter.com/Tipsolana" target="_blank" rel="noreferrer">
-          <FontAwesomeIcon icon="fa-brands fa-twitter" size='3x' className="hover:h-14" />
+          <FontAwesomeIcon icon="fa-brands fa-twitter" size='3x' className="px-3" />
         </a>
      </div>
     )
@@ -347,7 +355,7 @@ function App() {
       {!walletAddress && !creatingPost && renderTitle()}
       {!walletAddress && !creatingPost && renderNotConnectedContainer()}
       {walletAddress && !creatingPost && renderConnectedContainer()}
-      {walletAddress && !creatingPost && renderCommunity()}
+      {/* {walletAddress && !creatingPost && renderCommunity()} */}
       {walletAddress && creatingPost && renderPostForm()}
     </div>
   );
