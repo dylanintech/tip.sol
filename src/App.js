@@ -147,6 +147,7 @@ function App() {
             name="title"
             onChange={onTitleChange}
             className="py-2 my-3 w-1/2 rounded-md"
+            required
           />
           <br />
           <label for="intro" className="mx-2">
@@ -159,6 +160,7 @@ function App() {
             name="intro"
             onChange={onIntroChange}
             className="py-2 my-3 w-1/2 rounded-md"
+            required
           />
           <br />
           <label for="body" className="mx-2">
@@ -171,6 +173,7 @@ function App() {
             name="body"
             onChange={onBodyChange}
             className="py-2 my-3 w-1/2 rounded-md"
+            required
           />
           <br />
           <label for="conclusion" className="mx-2">
@@ -183,6 +186,7 @@ function App() {
             name="conclusion"
             onChange={onConclusionChange}
             className="py-2 my-3 w-1/2 rounded-md"
+            required
           />
           <br />
           <button className=" border-black border-2 rounded-lg w-1/3 bg-purple-500/50 hover:bg-purple-700/50 p-2 my-2" type="submit">Post!</button>
