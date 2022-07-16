@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-// import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js'
-// import { Program, Provider, web3 } from '@project-serum/anchor';
-// import kp from './keypair.json';
-// import idl from './idl.json';
+import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js'
+import  { Program, getProvider, setProvider, web3 } from '@project-serum/anchor';
+import kp from './keypair.json';
+import idl from './idl.json';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faGithub, faDiscord, faTwitter } from '@fortawesome/free-brands-svg-icons'
@@ -12,7 +12,7 @@ import { BiUpvote } from "react-icons/bi";
 import { BiDownvote } from "react-icons/bi";
 import { IconContext } from "react-icons";
 library.add(faGithub, faDiscord, faTwitter);
-// const anchor = require('@project-serum/anchor');
+const anchor = require('@project-serum/anchor');
 
 //utility function to shorten wallet address
 const shortenAddress = (str) => {
@@ -20,29 +20,30 @@ const shortenAddress = (str) => {
 };
 
 //Solana runtime
-// const { SystemProgram } = web3;
+const { SystemProgram, Keypair } = web3;
 
 //Creating tip.sol account (which will hold our post data)
-// const arr = Object.values(kp._keypair.secretKey);
-// const secret = new Uint8Array(arr);
-// const baseAccount = web3.Keypair.fromSecretKey(secret);
+const arr = Object.values(kp._keypair.secretKey);
+const secret = new Uint8Array(arr);
+const baseAccount = web3.Keypair.fromSecretKey(secret);
+// let baseAccount = Keypair.generate();
 
 //Getting our program ID
-// const programID = new PublicKey(idl.metadata.address);
+const programID = new PublicKey(idl.metadata.address);
 
 //Setting network to devnet
-// const network = clusterApiUrl('devnet');
+const network = clusterApiUrl('devnet');
 
 //How we want to acknowledge when a transaction is done
-// const opts = {
-//   preflightCommitment: "processed",
-// }
+const opts = {
+  preflightCommitment: "processed",
+}
 
 function App() {
   //Global State
   const [walletAddress, setWalletAddress] = useState(null);
   const [creatingPost, setCreatingPost] = useState(false);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); 
   //Post creation State
   const [title, setTitle] = useState('');
   const [intro, setIntro] = useState('');
@@ -66,7 +67,7 @@ function App() {
           setWalletAddress(response.publicKey.toString());
         }
       } else {
-        alert("Solana object not found! Get the Phantom Wallet: https://phantom.app/!")
+        alert("Solana object not found! Get the Phantom Wallet: https://phantom.app/")
       }
     } catch (error) {
       console.error(error);
@@ -83,27 +84,103 @@ function App() {
     }
   }
 
+  const getProvider = () => {
+    const connection = new Connection(network, opts.preflightCommitment);
+    const provider = new anchor.AnchorProvider(
+      connection, window.solana, opts.preflightCommitment,
+    );
+    return provider;
+  }
+
+  const getPosts = async() => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      const account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+
+      console.log("Got the account:", account)
+      setPosts(account.postList);
+    } catch (error) {
+      console.log("Error in getPosts:", error)
+      setPosts(null);
+    }
+  }
+
+  useEffect(() => {
+    if (walletAddress) {
+      console.log("Fetching post list...");
+      getPosts()
+    }
+  }, [walletAddress]);
+
   // const getProvider = () => {
-  //   const connection = new Connection(network, opts.preflightCommitment);
-  //   const provider = new Provider(
-  //     connection, window.solana, opts.preflightCommitment,
-  //   );
+  //   anchor.setProvider(anchor.Provider.env());
+  //   const provider = anchor.getProvider();
   //   return provider;
   // }
 
-  const addPost = () => {
-    //This is where you'll do the remote procedure call
-    const newPost = {
-      postTitle: title,
-      postIntro: intro,
-      postBody: body,
-      postConclusion: conclusion,
-    };
-    setPosts([...posts, newPost]);
-    setTitle('');
-    setIntro('');
-    setBody('');
-    setConclusion('');
+  const createPostAccount = async () => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      console.log("ping");
+      // await program.methods.startStuffOff({ 
+      //   accounts: {
+      //     baseAccount: baseAccount.publicKey,
+      //     user: provider.wallet.publicKey,
+      //     systemProgram: SystemProgram.programId,
+      //   },
+      //   signers: [baseAccount]
+      // }).rpc();
+      await program.methods.startStuffOff()
+        .accounts({
+          baseAccount: baseAccount.publicKey,
+          user: provider.wallet.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([baseAccount])
+        .rpc();
+      console.log("Created a new BaseAccount w/address:", baseAccount.publicKey);
+      await getPosts();
+  
+    } catch (error) {
+      console.log("Error creating BaseAccount account:", error);
+    }
+  }
+
+  // const addPost = () => {
+  //   //This is where you'll do the remote procedure call
+  //   const newPost = {
+  //     postTitle: title,
+  //     postIntro: intro,
+  //     postBody: body,
+  //     postConclusion: conclusion,
+  //   };
+  //   setPosts([...posts, newPost]);
+  //   setTitle('');
+  //   setIntro('');
+  //   setBody('');
+  //   setConclusion('');
+  // }
+
+  const addPost = async () => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+       
+      await program.methods
+      .addPost(title, intro, body, conclusion)
+      .accounts({
+        baseAccount: baseAccount.publicKey,
+        user: provider.wallet.publicKey,
+      })
+      .rpc();
+
+      console.log("Successfully submitted post!");
+      await getPosts();
+    } catch (error) {
+      console.log("Error submitting post:", error);
+    }
   }
 
   //Render Functions
@@ -114,7 +191,7 @@ function App() {
       <div>
         <p className="pb-2 font-bold">Post useful content and get tipped in SOL</p>
         <button
-         className='bg-gray-900 hover:bg-gray-700 border border-black hover:border-white text-white font-bold rounded-full shadow-2xl px-4 py-2 w-1/2 h-14'
+         className='bg-gray-900 hover:bg-gray-700 border border-black hover:border-white text-white font-bold rounded-full shadow-2xl hover:shadow-none px-4 py-2 w-1/2 h-14'
          onClick={connectWallet}
          >
           CONNECT WALLET
@@ -196,12 +273,23 @@ function App() {
   }
   //This UI renders when the user has connected their wallet but is not creating a new post
   const renderConnectedContainer = () => {
+    if (posts === null) {
+      return (
+        <div className="text-center">
+          <button className="border-black border-2 rounded-lg w-1/3 bg-purple-500/50 shadow-2xl hover:bg-purple-700/50 hover:shadow-none p-2 my-2" onClick={createPostAccount}>
+            Do a one time initialization for the Program Account!
+          </button>
+        </div>
+        
+      )
+    }
+    else {
     return (
       <div className="text-center text-white font-bold min-w-full pt-10">
         {/* <h1 className="mb-6 text-8xl">Tip.sol</h1> */}
         <div className="flex justify-evenly items-center">
           <div className="border-black border-2 bg-purple-400/50 w-1/6 max-h-20 rounded-lg shadow-lg py-2">
-            <h3>Connected✅</h3>
+            <h3>Connected ✅</h3>
             <p>{shortenAddress(walletAddress)}</p>
           </div>
           <h1 className="mb-6 text-8xl">Tip.sol</h1>
@@ -216,7 +304,7 @@ function App() {
           <div className="w-1/2 border-black border-2 rounded-lg text-black bg-white p-4 my-4 shadow-xl">
             <div className="block">
               <h1 className="text-3xl ">How I stay productive ✨</h1>
-              <p className="text-gray-500">Posted by B7KV...Elbj</p>
+              <p className="text-gray-500">Posted by B7KVc5...Elbj</p>
             </div>
             <div className="block">
               <p className="py-2">There's a ton of advice out there about the best "productivity stack" or the best "productive morning routine" but most of it is unnecessary and just makes you overwhelmed. You can actually be very productive with just a couple simple tools. Below I've compiled a few of my favorite tools I use to stay productve. </p>
@@ -250,7 +338,7 @@ function App() {
                     <BiDownvote />
                   </a>
                 </div>
-                <a href="" title="Send SOL to B7KV...Elbj">
+                <a href="" title="Send SOL to B7KVc5...Elbj">
                   <p className="pt-1 text-transparent bg-clip-text bg-gradient-to-br from-solana-green to-solana-purple">TIP</p>
                 </a>
               </div>
@@ -260,7 +348,7 @@ function App() {
            <div className="w-1/2 border-black border-2 rounded-lg text-black bg-white p-4 my-4 shadow-xl" key={index}>
              <div className="block">
                <h1 className="text-3xl ">{post.postTitle}</h1>
-               <p className="text-gray-500">Posted by B7KV...Elbj</p>
+               <p className="text-gray-500">Posted by B7KVc5...Elbj</p>
              </div>
              <div className="block">
                <p className="py-2">{post.postIntro}</p>
@@ -285,7 +373,7 @@ function App() {
                      <BiDownvote />
                    </a>
                  </div>
-                 <a href="" title="Send SOL to B7KV...Elbj">
+                 <a href="" title="Send SOL to B7KVc5...Elbj">
                    <p className="pt-1 text-transparent bg-clip-text bg-gradient-to-br from-solana-green to-solana-purple">TIP</p>
                  </a>
                </div>
@@ -296,6 +384,7 @@ function App() {
       </div>
     )
   }
+ }
 
   const renderTitle = () => {
     return (

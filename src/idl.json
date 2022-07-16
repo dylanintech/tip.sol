@@ -1,0 +1,115 @@
+{
+    "version": "0.1.0",
+    "name": "myepicproject",
+    "instructions": [
+      {
+        "name": "startStuffOff",
+        "accounts": [
+          {
+            "name": "baseAccount",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "user",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "addPost",
+        "accounts": [
+          {
+            "name": "baseAccount",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "user",
+            "isMut": true,
+            "isSigner": true
+          }
+        ],
+        "args": [
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "intro",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "type": "string"
+          },
+          {
+            "name": "conclusion",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "accounts": [
+      {
+        "name": "BaseAccount",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "totalPosts",
+              "type": "u64"
+            },
+            {
+              "name": "postList",
+              "type": {
+                "vec": {
+                  "defined": "PostStruct"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "types": [
+      {
+        "name": "PostStruct",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "postTitle",
+              "type": "string"
+            },
+            {
+              "name": "postIntro",
+              "type": "string"
+            },
+            {
+              "name": "postBody",
+              "type": "string"
+            },
+            {
+              "name": "postConclusion",
+              "type": "string"
+            },
+            {
+              "name": "userAddress",
+              "type": "publicKey"
+            }
+          ]
+        }
+      }
+    ],
+    "metadata": {
+      "address": "21RDAWgEN7KyxnX5EfLZCaS4Q1Sp22XXvuUum4i7ka39"
+    }
+}
