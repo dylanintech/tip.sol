@@ -8,6 +8,7 @@ module.exports = {
       colors: {
         'solana-green': '#14F195',
         'solana-purple': '#9945FF',
+        'dark-mode': '#2C3E50'
       },
       fontFamily: {
         'dm-sans': ['DM Sans'],
