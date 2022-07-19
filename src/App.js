@@ -461,12 +461,12 @@ function App() {
           //      </div>
           //    </div>
           //  </div>
-          <div className=" w-1/2 p-1 shadow-xl bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-2xl m-6">
+          <div className=" w-1/2 p-1 shadow-xl bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-2xl m-6" key={index}>
           <a className="block p-6 bg-white sm:p-8 rounded-xl text-black" href="">
             <div className="mt-2 mb-2 sm:pr-1">
             <div className="block">
                 <h1 className="text-3xl ">{post.postTitle}</h1>
-                <p className="text-gray-500">Posted by B7KVc5...Elbj</p>
+                <p className="text-gray-500">Posted by {shortenAddress(post.userAddress.toString())}</p>
               </div>
               <div className="block">
                 <p className="py-2">{post.postIntro}</p>
