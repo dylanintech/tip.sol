@@ -212,7 +212,6 @@ function App() {
             event.preventDefault();
             setCreatingPost(false);
             addPost();
-            window.alert("You've successfully posted!");
             // Call function that adds the post to the chain, when it's called remember to set every input value to an empty string
           }}
         >
@@ -256,6 +255,7 @@ function App() {
             rows="4"
             cols="25"
             name="body"
+            id="body"
             onChange={onBodyChange}
             className="py-2 p-2 my-5 w-1/2 rounded-md text-black"
             required
@@ -272,6 +272,7 @@ function App() {
             rows="3"
             cols="25"
             name="conclusion"
+            id="conclusion"
             onChange={onConclusionChange}
             className="py-2 p-2 my-5 w-1/2 rounded-md text-black"
             required
@@ -533,17 +534,24 @@ function App() {
   }
 
   const onIntroChange = (event) => {
-    const { value } = event.target;
+    const intro = document.getElementById('intro');
+    const value = intro.value;
+    // const { value } = event.target;
     setIntro(value);
   }
+  
 
   const onBodyChange = (event) => {
-    const { value } = event.target;
+    // const { value } = event.target;
+    const body = document.getElementById('body');
+    const value = body.value;
     setBody(value);
   }
 
   const onConclusionChange = (event) => {
-    const { value } = event.target;
+    // const { value } = event.target;
+    const conclusion = document.getElementById('conclusion');
+    const value = conclusion.value;
     setConclusion(value);
   }
 
