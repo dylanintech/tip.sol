@@ -46,6 +46,9 @@ function App() {
   const [walletAddress, setWalletAddress] = useState(null);
   const [creatingPost, setCreatingPost] = useState(false);
   const [posts, setPosts] = useState([]); 
+  const [tipping, setTipping] = useState(false);
+  const [tipAmount, setTipAmount] = useState(0);
+  const [posterAddress, setPosterAddress] = useState('');
   //Post creation State
   const [title, setTitle] = useState('');
   const [intro, setIntro] = useState('');
@@ -115,25 +118,12 @@ function App() {
     }
   }, [walletAddress]);
 
-  // const getProvider = () => {
-  //   anchor.setProvider(anchor.Provider.env());
-  //   const provider = anchor.getProvider();
-  //   return provider;
-  // }
 
   const createPostAccount = async () => {
     try {
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
       console.log("ping");
-      // await program.methods.startStuffOff({ 
-      //   accounts: {
-      //     baseAccount: baseAccount.publicKey,
-      //     user: provider.wallet.publicKey,
-      //     systemProgram: SystemProgram.programId,
-      //   },
-      //   signers: [baseAccount]
-      // }).rpc();
       await program.methods.startStuffOff()
         .accounts({
           baseAccount: baseAccount.publicKey,
@@ -150,20 +140,6 @@ function App() {
     }
   }
 
-  // const addPost = () => {
-  //   //This is where you'll do the remote procedure call
-  //   const newPost = {
-  //     postTitle: title,
-  //     postIntro: intro,
-  //     postBody: body,
-  //     postConclusion: conclusion,
-  //   };
-  //   setPosts([...posts, newPost]);
-  //   setTitle('');
-  //   setIntro('');
-  //   setBody('');
-  //   setConclusion('');
-  // }
 
   const addPost = async () => {
     try {
@@ -182,6 +158,31 @@ function App() {
       await getPosts();
     } catch (error) {
       console.log("Error submitting post:", error);
+    }
+  }
+
+  const sendSol = async (receiverAddress) => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+
+      const solToSend = tipAmount * 1e9;
+      const amount = new anchor.BN(solToSend);
+
+      await program.methods
+      .sendSol(amount)
+      .accounts({
+        from: provider.wallet.publicKey,
+        to: receiverAddress,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+
+      console.log("Successfully sent SOL to", receiverAddress);
+      window.alert("You've successfully tipped the poster! Thanks for contributing.");
+
+    } catch (error) {
+      console.log("Error sending SOL", error);
     }
   }
 
@@ -335,51 +336,7 @@ function App() {
           Connect your wallet to post, tip, and more!
         </button>
          }
-        {/* <p>Thanks for connecting! Tip.sol is a magical✨ place that lets you post useful content and get tipped for it. In Solana! Join our community👇 to be notified as features begin to roll out! We're glad to have you here.</p> */}
         <div className="flex flex-col items-center"> 
-          {/* <div className="w-1/2 border-black border-2 rounded-lg text-black bg-white p-4 my-4 shadow-xl">
-            <div className="block">
-              <h1 className="text-3xl ">How I stay productive ✨</h1>
-              <p className="text-gray-500">Posted by B7KVc5...Elbj</p>
-            </div>
-            <div className="block">
-              <p className="py-2">There's a ton of advice out there about the best "productivity stack" or the best "productive morning routine" but most of it is unnecessary and just makes you overwhelmed. You can actually be very productive with just a couple simple tools. Below I've compiled a few of my favorite tools I use to stay productve. </p>
-              <ol className="font-normal">
-                <li className="py-2">1. <a href="https://www.notion.so/" target="_blank" rel="noreferrer"><span className="text-blue-900 font-semibold">Notion(free)</span></a>- A popular productivity app that's mostly used for planning ahead and organizing your life. I personally use Notion to plan my week and to lay out any high level long-term goals I have for the year. </li>
-                <li className="py-2">2. <a href="https://get.sunsama.com/" target="_blank" rel="noreferrer"><span className="text-blue-900 font-semibold">Sunsama(free trial)</span></a>- Whereas Notion is good for high-level planning, Sunsama is better at helping you be more producitve in your tactical, day-to-day tasks. What I like to do is write down my weekly goals on a Notion page, and then create daily tasks in Sunsama that will help me reach those goals. Sunsama makes this really easy with their Notion integration. One thing I really like about Sunsama is that you can add a timer to each task and set it to the amount of time you think that task will take and then measure how much time it actually takes you.</li>
-                <li className="py-2">3. <a href="https://pomofocus.io/" target="_blank" rel="noreferrer"><span className="text-blue-900 font-semibold">Pomofocus(free)</span></a>- If you've ever used the pomodoro technique you know how annoying it is to find custom timers on Google or Youtube and to set the break timers seperately. It's a whole mess. Pomofocus abstracts away all of this nonsense and provides you with a simple pomodoro timer where you can set custom focus/break times. It has a nice UI and is really a must for anyone using the pomodoro technique (not sponsored btw). </li>
-                <li className="py-2">4. <a href="https://wakatime.com/" target="_blank" rel="noreferrer"><span className="text-blue-900 font-semibold">Wakatime(free)</span></a>- This is more geared towards developers, but I've found Wakatime very useful for getting better at time management and optimizing my workflow. If you're a fellow dev you've probably heard of this, it's basically a VS code extension that collects data about how long you code for and what languages you use the most and then nicely displays the data in a dashboard. It's very important to be able to visualize what you spend most of the day doing so this is a must have for any dev.  </li>
-              </ol>
-              <p className="py-2">I hope this post has helped you become more efficient and productive😁.</p>
-              <div class="flex items-center justify-center">
-                <img className="py-2"src="https://media.giphy.com/media/pT4pmRFs15Yg8/giphy.gif" alt="productivity in action!"/>
-              </div>
-              <p className="py-2">**This is a preview of what posts on your feed will look like. Real posts won't have to be as long or as short but will generally follow a similar blog-post like format. Join our Discord if you're interested in using Tip.sol when it releases!**</p>
-            </div>
-            <div className="block border-t-2">
-              {/* <p className="float-left">Twitter: <a href="https://twitter.com/dxlantxch" target="_blank" rel="noreferrer"><span className="text-blue-700">@dxlantxch</span></a></p> */}
-              {/* <div className="float-right flex">
-                <IconContext.Provider value={{ style: { width: '3em', height: '2em'} }}>
-                  <div>
-                    <a href="" title="Add to favorites">
-                      <AiOutlineStar className=""/>
-                    </a>
-                  </div>
-                </IconContext.Provider>
-                <div className="pr-2">
-                  <a href="" title="This post was useful">
-                    <BiUpvote />
-                  </a>
-                  <a href="" title="This post was not useful">
-                    <BiDownvote />
-                  </a>
-                </div>
-                <a href="" title="Send SOL to B7KVc5...Elbj">
-                  <p className="pt-1 text-transparent bg-clip-text bg-gradient-to-br from-solana-green to-solana-purple">TIP</p>
-                </a>
-              </div>
-            </div>
-          </div> */} 
           <div className=" w-1/2 p-1 shadow-xl bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-2xl m-6"> {/* bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500*/}
   <a className="block p-6 bg-white sm:p-8 rounded-xl text-black" href="">
     <div className="mt-2 mb-2 sm:pr-1">
@@ -428,39 +385,6 @@ function App() {
   </a>
 </div>
           {posts.map((post, index) => (
-          //  <div className="w-1/2 border-black border-2 rounded-xl text-black bg-white p-4 my-4 shadow-xl" key={index}>
-          //    <div className="block">
-          //      <h1 className="text-3xl ">{post.postTitle}</h1>
-          //      <p className="text-gray-500">Posted by B7KVc5...Elbj</p>
-          //    </div>
-          //    <div className="block">
-          //      <p className="py-2">{post.postIntro}</p>
-          //      <p className="py-2 font-normal">{post.postBody}</p>
-          //      <p className="py-2">{post.postConclusion}</p>
-          //    </div>
-          //    <div className="block border-t-2">
-          //      <div className="float-right flex">
-          //        <IconContext.Provider value={{ style: { width: '3em', height: '2em'} }}>
-          //          <div>
-          //            <a href="" title="Add to favorites">
-          //              <AiOutlineStar className=""/>
-          //            </a>
-          //          </div>
-          //        </IconContext.Provider>
-          //        <div className="pr-2">
-          //          <a href="" title="This post was useful">
-          //            <BiUpvote />
-          //          </a>
-          //          <a href="" title="This post was not useful">
-          //            <BiDownvote />
-          //          </a>
-          //        </div>
-          //        <a href="" title="Send SOL to B7KVc5...Elbj">
-          //          <p className="pt-1 text-transparent bg-clip-text bg-gradient-to-br from-solana-green to-solana-purple">TIP</p>
-          //        </a>
-          //      </div>
-          //    </div>
-          //  </div>
           <div className=" w-1/2 p-1 shadow-xl bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-2xl m-6" key={index}>
           <a className="block p-6 bg-white sm:p-8 rounded-xl text-black" href="">
             <div className="mt-2 mb-2 sm:pr-1">
@@ -490,8 +414,14 @@ function App() {
                       <BiDownvote />
                     </a>
                   </div>
-                  <a href="" title="Send SOL to B7KVc5...Elbj">
-                    <p className="pt-1 text-transparent bg-clip-text bg-gradient-to-br from-solana-green to-solana-purple">TIP</p>
+                  <a href="" title="">
+                    <button onClick={(event) => {
+                      event.preventDefault()
+                      setTipping(true)
+                      setPosterAddress(post.userAddress.toString())
+                    }}>
+                      <p className="pt-1 text-transparent bg-clip-text bg-gradient-to-br from-solana-green to-solana-purple">TIP</p>
+                    </button>
                   </a>
                 </div>
               </div>
@@ -526,6 +456,43 @@ function App() {
      </div>
     )
   }
+
+  const renderTipForm = () => {
+    return (
+      <div className="text-white">
+        <h1 className="py-6 mb-3 font-bold text-2xl ">How much SOL do you want to tip?</h1>
+        <form onSubmit={(event) => {
+          event.preventDefault()
+          setTipping(false)
+          sendSol(posterAddress)
+        }}
+        >
+          <input 
+           type="number"
+           value={tipAmount}
+           onChange={onTipAmountChange}
+           placeholder="ex: 0.7"
+           name="tipAmount"
+           id="tipAmount"
+           min="0.0001"
+           step="any"
+           className="py-2 p-2 my-5 w-1/3 rounded-md text-black"
+           required
+          />
+          <br />
+          <button type="submit" className=" border-black border-2 rounded-lg w-1/3 bg-gradient-to-br from-button-gradient-start via-button-gradient-end to-black bg-gradient-to-r hover:bg-gradient-to-tl p-3 my-3">Tip {tipAmount} SOL 💸</button>
+        </form>
+        <br />
+        <button onClick={(event) => {
+          event.preventDefault()
+          setTipping(false)
+        }}>
+          <img src="https://media.giphy.com/media/KB8C86UMgLDThpt4WT/giphy.gif" alt="Thank you GIF" className="py-6 mb-2"/>
+          <p className="py-2">Nevermind</p>
+        </button>
+      </div>
+    )
+  }
   
   //Input Change Handlers
   const onTitleChange = (event) => {
@@ -555,6 +522,11 @@ function App() {
     setConclusion(value);
   }
 
+  const onTipAmountChange = (event) => {
+    const { value } = event.target;
+    setTipAmount(value);
+  }
+
   //When the component mounts for the first time, check to see if the Phantom wallet is connected
   useEffect(() => {
     const onLoad = async () => {
@@ -569,9 +541,10 @@ function App() {
     <div className={`text-center from-gradient-start to-gradient-end bg-gradient-to-r w-full h-full`}>
       {/* {!walletAddress && !creatingPost && renderTitle()} */}
       {/* {!walletAddress && !creatingPost && renderNotConnectedContainer()} */}
-      {!creatingPost && renderConnectedContainer()}
+      {!creatingPost && !tipping && renderConnectedContainer()}
       {/* {walletAddress && !creatingPost && renderCommunity()} */}
-      {walletAddress && creatingPost && renderPostForm()}
+      {walletAddress && !tipping && creatingPost && renderPostForm()}
+      {walletAddress && tipping && renderTipForm()}
     </div>
   );
 }
